@@ -11,7 +11,7 @@ This example uses the LwIP library to run a simple webserver on the board. The L
 ## Setting up
 
 1. Clone the github repo from the resources link ([This one](https://git.ti.com/cgit/hercules_examples/hercules_examples/)) (Clone links are at the bottom).
-2. Set up a serial terminal. This isn't strictly necessary, but it's useful to see the `sciDisplayText` calls when you don't want to launch the program in debug mode to see data, or when a program is already using it, like this one is. I recommend [CoolTerm](https://freeware.the-meiers.org/), and it should work out of the box once you connect the JTAG wire (the USB mini port). When you launch the program in debug mode, this is the wire that transfers printfs. It also carries serial data from the SCI (Serial Communications Interface), which can be read by CoolTerm.
+2. Set up a serial terminal. This isn't strictly necessary, but it's useful to see the `sciDisplayText` calls when you don't want to launch the program in debug mode to see printfs, or when a program is already using it, like this one is. I recommend [CoolTerm](https://freeware.the-meiers.org/), and it should work out of the box once you connect the JTAG wire (the USB mini port). When you launch the program in debug mode, this is the wire that transfers printfs. It also carries serial data from the SCI (Serial Communications Interface), which can be read by CoolTerm.
 3. In CCS, open the `hercules_examples/Application/LwIP/v00.04.00/TMS570LS12x/Build-TMS570LS12x`. This folder contains CCS project metadata, as well as the HALCoGen build files, so it should work out of the box. You can inspect the HALCoGen/CCS settings yourself, but since we're opening the board specific project, you shouldn't need to change anything.
 4. In `lwip_main.c` (`example/hdk/src`) change the ip address to use static ip instead of DHCP. We ran into issues with initialization using DHCP, and its also easier to set up the ARP table with a static ip.
    - Make sure to comment out the dynamic ipAddr line, otherwise the initialization process will fail.
@@ -38,7 +38,7 @@ ipAddr = lwIPInit(0, macAddress,
 
 ![CoolTerm](coolterm.png)
 
-6. Connect to the webserver by going to your browser, and typing in the ip address. As long as you've set up your arp table correctly, you should see the webserver! Note that the "url" is the ip address we set.
+6. Connect to the webserver by going to your browser, and typing in the ip address. As long as you've set up your arp table correctly, you should see the webserver! Note that the URI is the ip address we set.
 
 ![The served webpage seen in a browser](webpage.png)
 
