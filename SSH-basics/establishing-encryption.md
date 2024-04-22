@@ -26,3 +26,6 @@ The shared secret is the same because:
 ```math
 S = (g^b)^a\text{ mod }p=(g^a)^b\text{ mod }p
 ```
+
+## Authenticating the Client
+The client begins by sending the server the ID of the key-pair it would like to use. The server then checks to see if that key is in its “authorized_keys” file. If it is, the server makes the client prove their identity by encrypting a number using their public key and sending it to them. Once the client successfully decrypts the number, it then combines it with the shared session key and calculates the MD5 hash of that number, and sends it back to the server. The server performs the same calculation and compares the two hashes. If the two values match, the client is authenticated.
