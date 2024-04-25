@@ -12,14 +12,23 @@ EMAC stands for **Ethernet Media Access Controller**. It is a hardware component
 
 Our microcontroller has an EMAC module which allows it to connect to an Ethernet network.
 ### What are Interrupts?
-(Go over basic definition and why we're avoiding them)
+Interrupts are essential to how microcontrollers function. They are a mechanism used to temporarily halt the normal flow of program execution in response to an event or condition. These events are often hardware signals, like the completion of a data transfer or the press of a button. When an interrupt occurs, the processor stops whatever it was doing before and switches to an interrupt service routine (ISR), also called an interrupt handler. Once the ISR completes its tasks, the processor resumes whatever it was doing before.
+
+However, because this implementation is being designed for a context in which timing is crucial, we can't afford to have our main event loop being constantly interrupted. We can't avoid them completely due to the hardware of our board, but we are exclusively using the interrupts needed to write data from our EMAC module into main memory.
 
 ## Loop Structure
+Here, I'll give a rough overview of what our main event loop will look like. This section will be a little more technical by nature of the topic matter.
 ### Checking the Network
+Before we do anything else, we need to check our link state (make sure that our network connection is still up). The actual check will involve communication with our ethernet module via the MDIO bus, and if the link status has changed, we'll update our network interface (netif) struct.
 ### Checking for Packets
+This is something we're still working on. Our EMAC module stores packet buffer descriptors in a circular buffer of length 10. Each descriptor points to the next, and we can follow them until we reach a NULL pointer to form a primitive version of packet detection. However, this approach could result in us being overwhelmed if we are likely to ever receive more than 10 packets in the time between packet checks. This also seems like it would result in a security vulnerability. We're pretty sure there's another approach using particular registers that work, and we're researching that now.
 ### Callback Functions
+See this [short guide to callback functions](https://github.com/jgoldberger26/baressh-rcos-docs/blob/main/implementation-details/callback-functions.md) if you are unfamiliar. We'll eventually add explainations for our callback functions in the same place once we've tested them.
+When we detect an incoming packet in the previous step, we will alert lwIP, and lwIP will call our callback functions. These are essentially are replacement for interrupts. These do the work that interrupts would normally do, but we can control when we call them.
 ### Checking Timeouts
+Next, we'll check our assorted timeout timers. This means timers like our connection timeout: if the client doesn't establish the connection during a particular time frame, we close the connection to free ip resources. There's additional timers for authentication, idling, and a session time limit.
 ### SSH
+After all this, we can start actually running our application. Details about our decisions for our implementation of SSH will eventually be added [here](https://github.com/jgoldberger26/baressh-rcos-docs/tree/main/SSH-basics).
 
 ## Walking Through the Program
 ### Packet Arrives
